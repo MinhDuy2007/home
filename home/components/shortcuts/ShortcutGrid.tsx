@@ -36,7 +36,7 @@ const headerVariants = {
 export function ShortcutGrid({ shortcuts, focusMode, onEditShortcut }: ShortcutGridProps) {
     // Filter out Entertainment category when focus mode is active
     const filteredShortcuts = focusMode
-        ? shortcuts.filter((s) => s.category !== "Entertainment")
+        ? shortcuts.filter((s) => s.category !== "Giải trí")
         : shortcuts;
 
     const groupedShortcuts = groupShortcutsByCategory(filteredShortcuts);

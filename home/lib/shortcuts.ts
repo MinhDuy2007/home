@@ -14,7 +14,7 @@ export interface Shortcut {
     title: string;
     icon: string; // lucide-react icon name
     category: ShortcutCategory;
-    description: string; // Shown in tooltip
+    description?: string; // Shown in tooltip
     url: string; // Primary URL (https:// for web, protocol:// for apps)
     type: ShortcutType;
     fallbackUrl?: string; // Fallback URL if app protocol fails

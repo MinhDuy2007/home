@@ -141,8 +141,8 @@ export function ShortcutEditorDialog({
         const shortcutData: Shortcut = {
             id: shortcut?.id || generateShortcutId(),
             title: title.trim(),
-            category: finalCategory,
-            description: description.trim() || undefined,
+            category: finalCategory as Shortcut["category"], // Cast to ShortcutCategory type
+            description: description.trim(),
             type: linkType,
             url: url.trim(),
             fallbackUrl: fallbackUrl.trim() || undefined,
