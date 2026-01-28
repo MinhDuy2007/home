@@ -60,13 +60,14 @@ export default function Home() {
     saveBackground(config);
   };
 
-  const handleDataChange = () => {
+  const handleDataChange = async () => {
     // Reload all data after import/reset
     const loadedShortcuts = loadShortcutsFromStorage();
     setShortcuts(loadedShortcuts || DEFAULT_SHORTCUTS);
     setProfile(loadProfile());
     setFocusMode(loadFocusMode());
-    setBackground(loadBackground());
+    const bg = await loadBackground();
+    setBackground(bg);
   };
 
   const handleShortcutsUpdate = (updated: Shortcut[]) => {
