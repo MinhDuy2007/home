@@ -30,12 +30,19 @@ export default function Home() {
 
   // Load data from localStorage on mount
   useEffect(() => {
-    const loadedShortcuts = loadShortcutsFromStorage();
-    setShortcuts(loadedShortcuts || DEFAULT_SHORTCUTS);
-    setProfile(loadProfile());
-    setFocusMode(loadFocusMode());
-    setBackground(loadBackground());
-    setMounted(true);
+    const initData = async () => {
+      const loadedShortcuts = loadShortcutsFromStorage();
+      setShortcuts(loadedShortcuts || DEFAULT_SHORTCUTS);
+      setProfile(loadProfile());
+      setFocusMode(loadFocusMode());
+
+      // Background loading is now async for IDB support
+      const bg = await loadBackground();
+      setBackground(bg);
+
+      setMounted(true);
+    };
+    initData();
   }, []);
 
   const handleProfileSave = (updatedProfile: Profile) => {

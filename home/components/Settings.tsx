@@ -39,12 +39,12 @@ export function Settings({ onDataChange, background, onBackgroundChange }: Setti
     const handleReset = () => {
         if (
             confirm(
-                "Are you sure you want to reset all data to defaults? This cannot be undone."
+                "Bạn có chắc chắn muốn đặt lại tất cả dữ liệu về mặc định không? Hành động này không thể hoàn tác."
             )
         ) {
             resetAllData();
             if (onDataChange) onDataChange();
-            alert("All data has been reset to defaults");
+            alert("Tất cả dữ liệu đã được đặt lại về mặc định");
         }
     };
 
@@ -63,11 +63,11 @@ export function Settings({ onDataChange, background, onBackgroundChange }: Setti
                 reader.onload = (e) => {
                     const content = e.target?.result as string;
                     if (importData(content)) {
-                        alert("Data imported successfully!");
+                        alert("Nhập dữ liệu thành công!");
                         if (onDataChange) onDataChange();
                         setOpen(false);
                     } else {
-                        alert("Failed to import data. Please check the file format.");
+                        alert("Nhập dữ liệu thất bại. Vui lòng kiểm tra định dạng tệp.");
                     }
                 };
                 reader.readAsText(file);
@@ -90,9 +90,9 @@ export function Settings({ onDataChange, background, onBackgroundChange }: Setti
 
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
                 <DialogHeader>
-                    <DialogTitle>Settings</DialogTitle>
+                    <DialogTitle>Cài đặt</DialogTitle>
                     <DialogDescription>
-                        Customize your dashboard and manage your data
+                        Tùy chỉnh bảng điều khiển và quản lý dữ liệu của bạn
                     </DialogDescription>
                 </DialogHeader>
 
@@ -100,22 +100,22 @@ export function Settings({ onDataChange, background, onBackgroundChange }: Setti
                     <TabsList className="grid w-full grid-cols-3">
                         <TabsTrigger value="appearance">
                             <Sun className="w-4 h-4 mr-2" />
-                            Appearance
+                            Giao diện
                         </TabsTrigger>
                         <TabsTrigger value="background">
                             <Palette className="w-4 h-4 mr-2" />
-                            Background
+                            Hình nền
                         </TabsTrigger>
                         <TabsTrigger value="data">
                             <Database className="w-4 h-4 mr-2" />
-                            Data
+                            Dữ liệu
                         </TabsTrigger>
                     </TabsList>
 
                     {/* Appearance Tab */}
                     <TabsContent value="appearance" className="space-y-6 py-4">
                         <div className="space-y-2">
-                            <h3 className="text-sm font-medium">Theme</h3>
+                            <h3 className="text-sm font-medium">Chủ đề</h3>
                             <div className="flex gap-2">
                                 <Button
                                     variant={theme === "light" ? "default" : "outline"}
@@ -123,7 +123,7 @@ export function Settings({ onDataChange, background, onBackgroundChange }: Setti
                                     className="flex-1"
                                 >
                                     <Sun className="w-4 h-4 mr-2" />
-                                    Light
+                                    Sáng
                                 </Button>
                                 <Button
                                     variant={theme === "dark" ? "default" : "outline"}
@@ -131,15 +131,14 @@ export function Settings({ onDataChange, background, onBackgroundChange }: Setti
                                     className="flex-1"
                                 >
                                     <Moon className="w-4 h-4 mr-2" />
-                                    Dark
+                                    Tối
                                 </Button>
                             </div>
                         </div>
 
                         <div className="pt-4 border-t">
                             <p className="text-sm text-muted-foreground">
-                                More appearance options coming soon: accent colors, font sizes,
-                                card styles.
+                                Các tùy chọn giao diện khác sẽ sớm ra mắt: màu nhấn, cỡ chữ, kiểu thẻ.
                             </p>
                         </div>
                     </TabsContent>
@@ -153,7 +152,7 @@ export function Settings({ onDataChange, background, onBackgroundChange }: Setti
                             />
                         ) : (
                             <p className="text-sm text-muted-foreground">
-                                Background settings not available
+                                Cài đặt hình nền không khả dụng
                             </p>
                         )}
                     </TabsContent>
@@ -161,7 +160,7 @@ export function Settings({ onDataChange, background, onBackgroundChange }: Setti
                     {/* Data Management Tab */}
                     <TabsContent value="data" className="space-y-6 py-4">
                         <div className="space-y-2">
-                            <h3 className="text-sm font-medium">Backup & Restore</h3>
+                            <h3 className="text-sm font-medium">Sao lưu & Khôi phục</h3>
                             <div className="space-y-2">
                                 <Button
                                     variant="outline"
@@ -169,7 +168,7 @@ export function Settings({ onDataChange, background, onBackgroundChange }: Setti
                                     className="w-full justify-start"
                                 >
                                     <Download className="w-4 h-4 mr-2" />
-                                    Export Data (JSON)
+                                    Xuất dữ liệu (JSON)
                                 </Button>
 
                                 <Button
@@ -178,7 +177,7 @@ export function Settings({ onDataChange, background, onBackgroundChange }: Setti
                                     className="w-full justify-start"
                                 >
                                     <Upload className="w-4 h-4 mr-2" />
-                                    Import Data (JSON)
+                                    Nhập dữ liệu (JSON)
                                 </Button>
 
                                 <Button
@@ -187,17 +186,14 @@ export function Settings({ onDataChange, background, onBackgroundChange }: Setti
                                     className="w-full justify-start"
                                 >
                                     <RotateCcw className="w-4 h-4 mr-2" />
-                                    Reset to Defaults
+                                    Đặt lại về mặc định
                                 </Button>
                             </div>
                         </div>
 
                         <div className="pt-4 border-t">
                             <p className="text-xs text-muted-foreground">
-                                All data is stored locally in your browser. To transfer settings
-                                to another device or browser, use the export/import feature.
-                                Exported data includes shortcuts, profile, background, and
-                                preferences.
+                                Tất cả dữ liệu được lưu trữ cục bộ trong trình duyệt của bạn. Để chuyển cài đặt sang thiết bị hoặc trình duyệt khác, hãy sử dụng tính năng xuất/nhập. Dữ liệu xuất bao gồm phím tắt, hồ sơ, hình nền và tùy chọn.
                             </p>
                         </div>
                     </TabsContent>

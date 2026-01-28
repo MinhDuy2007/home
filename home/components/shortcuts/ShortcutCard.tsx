@@ -20,10 +20,12 @@ interface ShortcutCardProps {
 }
 
 // Premium spring animation config
+// Premium spring animation config - Snappy/Immediate response
 const springConfig = {
     type: "spring" as const,
-    stiffness: 300,
-    damping: 20,
+    stiffness: 500,
+    damping: 25,
+    mass: 0.5, // Lighter mass for faster start
 };
 
 export function ShortcutCard({ shortcut, index, onEdit }: ShortcutCardProps) {
@@ -76,34 +78,40 @@ export function ShortcutCard({ shortcut, index, onEdit }: ShortcutCardProps) {
                         >
                             <motion.button
                                 whileHover={{
-                                    scale: 1.03,
-                                    y: -4,
+                                    scale: 1.05,
+                                    y: -5,
                                     transition: springConfig,
                                 }}
-                                whileTap={{ scale: 0.97 }}
+                                whileTap={{ scale: 0.95 }}
                                 onClick={handleClick}
-                                className="relative w-full flex flex-col items-center gap-3 p-6 rounded-2xl bg-card border border-border hover:border-primary/50 hover:shadow-xl hover:glow-primary transition-all duration-200 focus-visible-enhanced"
+                                className="relative w-full flex flex-col items-center gap-3 p-6 rounded-2xl 
+                                         bg-card/40 backdrop-blur-md border border-border/50 
+                                         hover:bg-card/60 hover:border-primary 
+                                         hover:shadow-[0_0_20px_var(--primary)] 
+                                         transition-all duration-75 focus-visible-enhanced group-hover:z-10"
                             >
                                 {/* Icon with lift animation */}
                                 <motion.div
-                                    whileHover={{ y: -2, transition: springConfig }}
-                                    className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors"
+                                    whileHover={{ y: -3, scale: 1.1, transition: springConfig }}
+                                    className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center 
+                                             group-hover:bg-primary/20 group-hover:shadow-[0_0_15px_var(--primary)] 
+                                             transition-all duration-75"
                                 >
-                                    <IconComponent className="w-7 h-7 text-primary group-hover:brightness-110 transition-all" />
+                                    <IconComponent className="w-7 h-7 text-primary group-hover:brightness-125 transition-all duration-75" />
                                 </motion.div>
 
                                 <div className="flex flex-col items-center gap-1">
-                                    <span className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">
+                                    <span className="text-sm font-medium text-foreground group-hover:text-primary transition-colors duration-75">
                                         {shortcut.title}
                                     </span>
-                                    <span className="text-xs text-muted-foreground">
+                                    <span className="text-xs text-muted-foreground group-hover:text-foreground/80 transition-colors duration-75">
                                         {shortcut.category}
                                     </span>
                                 </div>
 
                                 {/* App indicator badge */}
                                 {shortcut.type === "app" && (
-                                    <div className="absolute top-3 right-3 w-2 h-2 rounded-full bg-primary/60" />
+                                    <div className="absolute top-3 right-3 w-1.5 h-1.5 rounded-full bg-primary/60 group-hover:bg-primary group-hover:shadow-[0_0_8px_var(--primary)] transition-all duration-75" />
                                 )}
                             </motion.button>
 

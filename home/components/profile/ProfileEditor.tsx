@@ -179,7 +179,7 @@ export function ProfileEditor({
                         mediaType: detectMediaTypeFromFile(selectedFile),
                     };
                 } catch (error) {
-                    setFileError("Failed to process file");
+                    setFileError("Không thể xử lý tệp");
                     return;
                 }
             } else {
@@ -189,13 +189,13 @@ export function ProfileEditor({
         } else {
             // URL mode
             if (!avatarUrl.trim()) {
-                setUrlError("URL is required");
+                setUrlError("URL là bắt buộc");
                 return;
             }
 
             const validation = validateAvatarUrl(avatarUrl);
             if (!validation.valid) {
-                setUrlError(validation.error || "Invalid URL");
+                setUrlError(validation.error || "URL không hợp lệ");
                 return;
             }
 
@@ -223,39 +223,39 @@ export function ProfileEditor({
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle>Edit Profile</DialogTitle>
+                    <DialogTitle>Chỉnh sửa hồ sơ</DialogTitle>
                     <DialogDescription>
-                        Update your name, bio, and avatar
+                        Cập nhật tên, tiểu sử và ảnh đại diện của bạn
                     </DialogDescription>
                 </DialogHeader>
 
                 <div className="space-y-6 py-4">
                     {/* Name */}
                     <div className="space-y-2">
-                        <Label htmlFor="name">Name</Label>
+                        <Label htmlFor="name">Tên</Label>
                         <Input
                             id="name"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            placeholder="Your name"
+                            placeholder="Tên của bạn"
                         />
                     </div>
 
                     {/* Bio */}
                     <div className="space-y-2">
-                        <Label htmlFor="bio">Bio</Label>
+                        <Label htmlFor="bio">Tiểu sử</Label>
                         <Textarea
                             id="bio"
                             value={bio}
                             onChange={(e) => setBio(e.target.value)}
-                            placeholder="A short bio about yourself"
+                            placeholder="Một đoạn tiểu sử ngắn về bản thân bạn"
                             rows={2}
                         />
                     </div>
 
                     {/* Avatar Section */}
                     <div className="space-y-4">
-                        <Label>Avatar</Label>
+                        <Label>Ảnh đại diện</Label>
 
                         {/* Tabs for Upload/URL */}
                         <Tabs
@@ -265,7 +265,7 @@ export function ProfileEditor({
                             <TabsList className="grid w-full grid-cols-2">
                                 <TabsTrigger value="upload">
                                     <Upload className="w-4 h-4 mr-2" />
-                                    Upload
+                                    Tải lên
                                 </TabsTrigger>
                                 <TabsTrigger value="url">
                                     <Link2 className="w-4 h-4 mr-2" />
@@ -283,10 +283,10 @@ export function ProfileEditor({
                                 >
                                     <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
                                     <p className="text-sm text-muted-foreground">
-                                        Click to upload or drag and drop
+                                        Nhấp để tải lên hoặc kéo thả
                                     </p>
                                     <p className="text-xs text-muted-foreground mt-1">
-                                        JPG, PNG, WebP, GIF, MP4, WebM (max 10MB)
+                                        JPG, PNG, WebP, GIF, MP4, WebM (tối đa 10MB)
                                     </p>
                                 </div>
 
@@ -341,7 +341,7 @@ export function ProfileEditor({
                                         <p className="text-sm text-destructive">{urlError}</p>
                                     )}
                                     <p className="text-xs text-muted-foreground">
-                                        Enter a direct link to an image, GIF, or video
+                                        Nhập liên kết trực tiếp đến hình ảnh, GIF hoặc video
                                     </p>
                                 </div>
                             </TabsContent>
@@ -350,7 +350,7 @@ export function ProfileEditor({
                         {/* Preview */}
                         {currentAvatarSrc && (
                             <div className="space-y-2">
-                                <Label>Preview</Label>
+                                <Label>Xem trước</Label>
                                 <div className="flex justify-center p-4 rounded-lg bg-accent/30">
                                     {currentMediaType === "video" ? (
                                         <video
@@ -362,7 +362,7 @@ export function ProfileEditor({
                                             className="w-32 h-32 rounded-full object-cover border-2 border-border shadow-lg"
                                             onError={() => {
                                                 if (avatarMode === "url") {
-                                                    setUrlError("Failed to load video");
+                                                    setUrlError("Không thể tải video");
                                                 }
                                             }}
                                         />
@@ -373,7 +373,7 @@ export function ProfileEditor({
                                             className="w-32 h-32 rounded-full object-cover border-2 border-border shadow-lg"
                                             onError={() => {
                                                 if (avatarMode === "url") {
-                                                    setUrlError("Failed to load image");
+                                                    setUrlError("Không thể tải hình ảnh");
                                                 }
                                             }}
                                         />
@@ -386,9 +386,9 @@ export function ProfileEditor({
 
                 <DialogFooter>
                     <Button variant="outline" onClick={() => onOpenChange(false)}>
-                        Cancel
+                        Hủy
                     </Button>
-                    <Button onClick={handleSave}>Save Changes</Button>
+                    <Button onClick={handleSave}>Lưu thay đổi</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

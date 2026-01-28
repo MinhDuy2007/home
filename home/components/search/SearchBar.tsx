@@ -62,7 +62,7 @@ export function SearchBar() {
                             onChange={(e) => setQuery(e.target.value)}
                             onFocus={() => setIsFocused(true)}
                             onBlur={() => setIsFocused(false)}
-                            placeholder="Search Google..."
+                            placeholder="Tìm kiếm trên Google..."
                             className="flex-1 bg-transparent outline-none text-lg placeholder:text-muted-foreground placeholder:transition-opacity focus:placeholder:opacity-50"
                         />
                     </motion.div>
@@ -85,7 +85,7 @@ export function SearchBar() {
                                     className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-accent transition-colors flex-1"
                                 >
                                     <ImageIcon className="w-4 h-4" />
-                                    <span className="text-sm">Images</span>
+                                    <span className="text-sm">Hình ảnh</span>
                                 </motion.button>
 
                                 <motion.button

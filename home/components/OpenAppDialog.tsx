@@ -76,9 +76,9 @@ export function OpenAppDialog({
                             <IconComponent className="w-6 h-6 text-primary" />
                         </div>
                         <div className="flex-1">
-                            <DialogTitle className="text-lg">Open {appName}?</DialogTitle>
+                            <DialogTitle className="text-lg">Mở {appName}?</DialogTitle>
                             <DialogDescription className="text-sm mt-1">
-                                This will open an external application on your device.
+                                Hành động này sẽ mở một ứng dụng bên ngoài trên thiết bị của bạn.
                             </DialogDescription>
                         </div>
                     </DialogHeader>
@@ -96,7 +96,7 @@ export function OpenAppDialog({
                                 htmlFor="remember"
                                 className="text-sm text-muted-foreground cursor-pointer"
                             >
-                                Remember my choice and don't ask again
+                                Ghi nhớ lựa chọn của tôi và không hỏi lại
                             </Label>
                         </div>
                     </div>
@@ -107,7 +107,7 @@ export function OpenAppDialog({
                             onClick={handleCancel}
                             className="flex-1"
                         >
-                            Cancel
+                            Hủy
                         </Button>
                         <motion.div
                             whileHover={{ scale: 1.02 }}
@@ -116,7 +116,7 @@ export function OpenAppDialog({
                         >
                             <Button onClick={handleConfirm} className="w-full">
                                 <ExternalLink className="w-4 h-4 mr-2" />
-                                Open App
+                                Mở ứng dụng
                             </Button>
                         </motion.div>
                     </DialogFooter>

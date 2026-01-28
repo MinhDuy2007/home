@@ -31,11 +31,47 @@ export const DEFAULT_BACKGROUND: BackgroundConfig = {
 /**
  * Save background configuration
  */
-export function saveBackground(config: BackgroundConfig): void {
+/**
+ * Save background configuration
+ */
+export async function saveBackground(config: BackgroundConfig): Promise<void> {
     if (typeof window === "undefined") return;
 
     try {
-        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+        // If it's a blob url (video/large image), we need to prevent it from being lost
+        // We can't store blob URLs directly in localStorage as they expire
+        // So we store the blob data in IndexedDB
+        if (config.value.startsWith("blob:")) {
+            try {
+                const response = await fetch(config.value);
+                const blob = await response.blob();
+
+                // Store the blob in IDB
+                const { setItem } = await import("./db");
+                await setItem("background_blob", blob);
+
+                // Store metadata in localStorage (or IDB), but mark value as stored
+                const configToStore = { ...config, value: "blob:stored" };
+
+                // Also store config in IDB to be safe/consistent
+                await setItem(STORAGE_KEY, configToStore);
+
+                // Keep localStorage for non-blob fallbacks or legacy checks, 
+                // but IDB is now primary for backgrounds
+                window.localStorage.setItem(STORAGE_KEY, JSON.stringify(configToStore));
+            } catch (err) {
+                console.error("Failed to store blob:", err);
+            }
+        } else {
+            // Normal storage for colors/gradients
+            window.localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+            // Also update IDB for consistency
+            const { setItem } = await import("./db");
+            await setItem(STORAGE_KEY, config);
+            // Clear any old blob if we switched to color/gradient
+            const { deleteItem } = await import("./db");
+            await deleteItem("background_blob");
+        }
     } catch (error) {
         console.error("Error saving background:", error);
     }
@@ -44,12 +80,36 @@ export function saveBackground(config: BackgroundConfig): void {
 /**
  * Load background configuration
  */
-export function loadBackground(): BackgroundConfig {
+export async function loadBackground(): Promise<BackgroundConfig> {
     if (typeof window === "undefined") return DEFAULT_BACKGROUND;
 
     try {
-        const item = window.localStorage.getItem(STORAGE_KEY);
-        return item ? JSON.parse(item) : DEFAULT_BACKGROUND;
+        // Try IDB first for full data
+        const { getItem } = await import("./db");
+        const storedConfig = await getItem<BackgroundConfig>(STORAGE_KEY);
+
+        let config = storedConfig;
+
+        // Fallback to localStorage if IDB empty (migration)
+        if (!config) {
+            const item = window.localStorage.getItem(STORAGE_KEY);
+            if (item) config = JSON.parse(item);
+        }
+
+        if (!config) return DEFAULT_BACKGROUND;
+
+        // Restore blob if needed
+        if (config.value === "blob:stored") {
+            const blob = await getItem<Blob>("background_blob");
+            if (blob) {
+                const url = URL.createObjectURL(blob);
+                return { ...config, value: url };
+            } else {
+                return DEFAULT_BACKGROUND; // Lost source
+            }
+        }
+
+        return config;
     } catch (error) {
         console.error("Error loading background:", error);
         return DEFAULT_BACKGROUND;
@@ -59,8 +119,8 @@ export function loadBackground(): BackgroundConfig {
 /**
  * Reset background to default
  */
-export function resetBackground(): BackgroundConfig {
-    saveBackground(DEFAULT_BACKGROUND);
+export async function resetBackground(): Promise<BackgroundConfig> {
+    await saveBackground(DEFAULT_BACKGROUND);
     return DEFAULT_BACKGROUND;
 }
 
@@ -79,19 +139,19 @@ export function validateBackgroundFile(file: File): { valid: boolean; error?: st
         };
     }
 
-    // Recommend size limits
+    // Recommend size limits (relaxed for IDB)
     const sizeMB = file.size / (1024 * 1024);
-    if (file.type.startsWith("video/") && sizeMB > 10) {
+    if (file.type.startsWith("video/") && sizeMB > 100) {
         return {
             valid: false,
-            error: "Video files should be under 10MB for best performance",
+            error: "Video files should be under 100MB",
         };
     }
 
-    if (file.type.startsWith("image/") && sizeMB > 5) {
+    if (file.type.startsWith("image/") && sizeMB > 20) {
         return {
             valid: false,
-            error: "Image files should be under 5MB for best performance",
+            error: "Image files should be under 20MB",
         };
     }
 
@@ -99,7 +159,7 @@ export function validateBackgroundFile(file: File): { valid: boolean; error?: st
 }
 
 /**
- * Process background file and return data URL
+ * Process background file and return object URL
  */
 export async function processBackgroundFile(file: File): Promise<{
     success: boolean;
@@ -113,50 +173,32 @@ export async function processBackgroundFile(file: File): Promise<{
         return { success: false, error: validation.error };
     }
 
-    return new Promise((resolve) => {
-        const reader = new FileReader();
+    let type: BackgroundType = "image";
+    if (file.type === "image/gif") {
+        type = "gif";
+    } else if (file.type.startsWith("video/")) {
+        type = "video";
+    }
 
-        reader.onload = () => {
-            if (typeof reader.result === "string") {
-                let type: BackgroundType = "image";
-                if (file.type === "image/gif") {
-                    type = "gif";
-                } else if (file.type.startsWith("video/")) {
-                    type = "video";
-                }
+    // Use Object URL for instant preview and better performance
+    // The previous FileReader approach used base64 which exploded memory usage
+    const objectUrl = URL.createObjectURL(file);
 
-                const sizeMB = file.size / (1024 * 1024);
-                let warning: string | undefined;
+    const sizeMB = file.size / (1024 * 1024);
+    let warning: string | undefined;
 
-                if (sizeMB > 2 && type === "image") {
-                    warning = `Image is ${sizeMB.toFixed(1)}MB. Consider compressing for better performance.`;
-                } else if (sizeMB > 5 && type === "video") {
-                    warning = `Video is ${sizeMB.toFixed(1)}MB. May impact page load speed.`;
-                }
+    if (sizeMB > 5 && type === "image") {
+        warning = `Large image (${sizeMB.toFixed(1)}MB).`;
+    } else if (sizeMB > 20 && type === "video") {
+        warning = `Large video (${sizeMB.toFixed(1)}MB).`;
+    }
 
-                resolve({
-                    success: true,
-                    data: reader.result,
-                    type,
-                    warning,
-                });
-            } else {
-                resolve({
-                    success: false,
-                    error: "Failed to read file",
-                });
-            }
-        };
-
-        reader.onerror = () => {
-            resolve({
-                success: false,
-                error: "Failed to read file. Please try again.",
-            });
-        };
-
-        reader.readAsDataURL(file);
-    });
+    return {
+        success: true,
+        data: objectUrl,
+        type,
+        warning,
+    };
 }
 
 /**

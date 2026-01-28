@@ -20,7 +20,7 @@ import {
 
 interface BackgroundSettingsProps {
     config: BackgroundConfig;
-    onChange: (config: BackgroundConfig) => void;
+    onChange: (config: BackgroundConfig) => Promise<void> | void;
 }
 
 export function BackgroundSettings({
@@ -44,7 +44,7 @@ export function BackgroundSettings({
         const result = await processBackgroundFile(file);
 
         if (result.success && result.data && result.type) {
-            onChange({
+            await onChange({
                 ...config,
                 type: result.type,
                 value: result.data,
@@ -92,7 +92,7 @@ export function BackgroundSettings({
         <div className="space-y-6">
             {/* File Upload */}
             <div className="space-y-2">
-                <Label className="text-base font-semibold">Upload Background</Label>
+                <Label className="text-base font-semibold">Tải lên hình nền</Label>
                 <div className="flex gap-2">
                     <Button
                         variant="outline"
@@ -101,7 +101,7 @@ export function BackgroundSettings({
                         disabled={isUploading}
                     >
                         <Upload className="w-4 h-4 mr-2" />
-                        {isUploading ? "Processing..." : "Upload Image/Video"}
+                        {isUploading ? "Đang xử lý..." : "Tải lên Ảnh/Video"}
                     </Button>
                     <input
                         id="bg-upload"
@@ -113,13 +113,12 @@ export function BackgroundSettings({
                     {config.type !== "none" && (
                         <Button variant="destructive" onClick={handleReset}>
                             <X className="w-4 h-4 mr-2" />
-                            Remove
+                            Gỡ bỏ
                         </Button>
                     )}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                    Supported: JPG, PNG, GIF, WebP, MP4, WebM (Images under 5MB, Videos
-                    under 10MB recommended)
+                    Hỗ trợ: JPG, PNG, GIF, WebP, MP4, WebM (Khuyên dùng: Ảnh dưới 5MB, Video dưới 10MB)
                 </p>
             </div>
 
@@ -139,7 +138,7 @@ export function BackgroundSettings({
             <div className="space-y-2">
                 <Label className="text-base font-semibold flex items-center gap-2">
                     <Palette className="w-4 h-4" />
-                    Gradient Presets
+                    Mẫu Gradient
                 </Label>
                 <div className="grid grid-cols-3 gap-2">
                     {GRADIENT_PRESETS.map((preset) => (
@@ -163,7 +162,7 @@ export function BackgroundSettings({
             <div className="space-y-2">
                 <Label className="text-base font-semibold flex items-center gap-2">
                     <Droplet className="w-4 h-4" />
-                    Solid Color
+                    Màu đơn sắc
                 </Label>
                 <div className="flex gap-2">
                     <input
@@ -177,7 +176,7 @@ export function BackgroundSettings({
                         onClick={() => handleColorChange("#000000")}
                         className="flex-1"
                     >
-                        Use Solid Color
+                        Sử dụng màu đơn sắc
                     </Button>
                 </div>
             </div>
@@ -186,7 +185,7 @@ export function BackgroundSettings({
             {config.type !== "none" && (
                 <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                        <Label>Blur: {config.blur}px</Label>
+                        <Label>Độ mờ (Blur): {config.blur}px</Label>
                     </div>
                     <Slider
                         value={[config.blur]}
@@ -204,7 +203,7 @@ export function BackgroundSettings({
             {config.type !== "none" && (
                 <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                        <Label>Dim: {config.dim}%</Label>
+                        <Label>Độ tối (Dim): {config.dim}%</Label>
                     </div>
                     <Slider
                         value={[config.dim]}
@@ -224,11 +223,11 @@ export function BackgroundSettings({
                     <div className="flex items-center gap-2">
                         <ImageIcon className="w-3 h-3" />
                         <span className="font-medium">
-                            Current: {config.type.charAt(0).toUpperCase() + config.type.slice(1)}
+                            Hiện tại: {config.type === "image" ? "Hình ảnh" : config.type === "video" ? "Video" : config.type === "color" ? "Màu sắc" : config.type === "gradient" ? "Gradient" : config.type}
                         </span>
                     </div>
-                    {config.blur > 0 && <div>Blur: {config.blur}px</div>}
-                    {config.dim > 0 && <div>Dim: {config.dim}%</div>}
+                    {config.blur > 0 && <div>Độ mờ: {config.blur}px</div>}
+                    {config.dim > 0 && <div>Độ tối: {config.dim}%</div>}
                 </div>
             )}
         </div>
